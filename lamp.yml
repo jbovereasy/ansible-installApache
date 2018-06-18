@@ -1,0 +1,63 @@
+---
+  - hosts: server
+    tasks:
+     - name: Install Apache
+       become: true
+       apt: name=apache2 state=present
+     
+     - name: Install PHP mod for Apache
+       become: true
+       apt: name=libapache2-mod-php state=present
+
+     - name: Install mysql
+       become: true
+       apt: name=mysql-server state=present
+
+     - name: Install git
+       become: true
+       apt: name=git state=present
+
+     - name: copy a local html file to server
+       become: true
+       copy:
+         src: index.html
+         dest: /var/www/html
+
+     - name: copy a local css file to server
+       become: true
+       copy:
+         src: photo.css
+         dest: /var/www/html
+
+     - name: creates a welcome page for SSH
+       become: true
+       copy:
+         dest: "/etc/motd"
+         content: |
+                 .  .    . .-. | .-..-. .--.--. .-.
+                  \  \  / (.-' |(  (   )|  |  |(.-'
+                   `' `'   `--'` `-'`-' '  '  ` `--'       
+
+     - name: create new group called test
+       become: true
+       group:
+          name: testgroup
+          state: present
+
+     - name: create new user with Sudo
+       become: true
+       user:
+         name: test1
+         comment: test user
+         shell: /bin/bash
+         groups: testgroup, sudo
+         state: present
+
+     - name: create new user 2 without sudo
+       become: true
+       user:
+         name: test2
+         comment: test user2
+         shell: /bin/bash
+         groups: testgroup
+         state: present
